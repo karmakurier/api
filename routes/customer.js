@@ -7,11 +7,11 @@ const usersController = require("../controller/UsersController");
 const tasksController = require("../controller/TasksController");
 
 // Models
-const User = require("../models/User");
+const models = require("../models/sequelize");
 
 router.use(function(req, res, next) {
 	if (req.user && !req.user.data.id) return res.sendStatus(404);
-	User.findOne({
+	models.User.findOne({
 		where: {
 			id: req.user.data.id
 		}

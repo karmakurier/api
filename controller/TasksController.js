@@ -1,11 +1,9 @@
-const fs = require("fs");
-
 // Models
-const Task = require("../models/Task.js");
+const models = require("../models/sequelize");
 
 exports.create = async (req, res, next) => {
 	const data = JSON.parse(req.body.data);
-	Task.create({
+	models.Task.create({
 		userId: null,
 		status: "IS_PENDING",
 		zip: data.zip,
@@ -17,7 +15,7 @@ exports.create = async (req, res, next) => {
 };
 
 exports.getById = async (req, res, next) => {
-	Task.findOne({
+	models.Task.findOne({
 		where: {
 			id: req.params.taskId
 		}
@@ -28,7 +26,7 @@ exports.getById = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
-	Task.findOne({
+	models.Task.findOne({
 		where: {
 			id: req.params.taskId
 		}
@@ -48,7 +46,7 @@ exports.update = async (req, res, next) => {
 };
 
 exports.getAll = (req, res, next) => {
-	Task.findAll({
+	models.Task.findAll({
 		where: {
 			status: "IS_PENDING"
 		}
@@ -59,14 +57,14 @@ exports.getAll = (req, res, next) => {
 };
 
 exports.getAllAdmin = (req, res, next) => {
-	Task.findAll().then(tasks => {
+	models.Task.findAll().then(tasks => {
 		if (tasks.length === 0) return res.json([]);
 		res.json(tasks);
 	});
 };
 
 exports.getAllMy = (req, res, next) => {
-	Task.findAll({
+	models.Task.findAll({
 		where: {
 			userId: req.user.data.id
 		}

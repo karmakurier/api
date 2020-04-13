@@ -1,0 +1,15 @@
+{
+    "development": {
+        "dialect": "sqlite",
+        "use_env_variable":false,
+        "storage": "development.sqlite"
+    },
+    "production": {
+        "username": "<user>",
+        "password": "<pw>",
+        "database": "<db",
+        "host": "<host>",
+        "dialect": "mariadb",
+        "use_env_variable":"mariadb://xx"
+    }
+}

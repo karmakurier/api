@@ -1,9 +1,9 @@
-const TaskHistory = require("../models/TaskHistory.js");
-const Task = require("../models/Task.js");
+
+const models = require("../models/sequelize");
 
 function getTask(id) {
 	return new Promise(resolve => {
-		Task.findOne({
+		models.Task.findOne({
 			where: {
 				id: id
 			}
@@ -73,7 +73,7 @@ async function createTaskHistory(req, res, action) {
 		// Create a new Ticket History
 		if (oldId == newId && entity === "ticket_status") return resolve();
 
-		TicketHistory.create({
+		models.TicketHistory.create({
 			ticketId: ticket.id,
 			action: action,
 			entity: entity,
@@ -87,7 +87,7 @@ async function createTaskHistory(req, res, action) {
 
 function getTicketHistory(req, res) {
 	return new Promise(resolve => {
-		TicketHistory.findAll({
+		models.TicketHistory.findAll({
 			where: {
 				ticketId: req.params.ticketId
 			},

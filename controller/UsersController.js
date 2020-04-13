@@ -1,12 +1,11 @@
-// const { DateTime } = require("luxon");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 // Models
-const User = require("../models/User.js");
+const models = require("../models/sequelize");
 
 exports.getById = async (req, res, next) => {
-	User.findOne({
+	models.User.findOne({
 		where: {
 			id: req.user.data.id
 		},
@@ -27,7 +26,7 @@ exports.getById = async (req, res, next) => {
 exports.getByIdAdmin = async (req, res, next) => {
 	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
-	User.findOne({
+	models.User.findOne({
 		where: {
 			id: req.params.userId
 		},
@@ -48,7 +47,7 @@ exports.getByIdAdmin = async (req, res, next) => {
 exports.updateByIdAdmin = async (req, res, next) => {
 	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
-	User.findOne({
+	models.User.findOne({
 		where: {
 			id: req.params.userId
 		},
@@ -70,7 +69,7 @@ exports.updateByIdAdmin = async (req, res, next) => {
 };
 
 exports.getAll = (req, res, next) => {
-	User.findAll().then(users => {
+	models.User.findAll().then(users => {
 		if (users.length === 0) return res.json({});
 		let sanitizedUser = [];
 		for (let i = 0; i < users.length; i += 1) {
@@ -89,7 +88,7 @@ exports.getAll = (req, res, next) => {
 exports.getAllAdmin = (req, res, next) => {
 	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
-	User.findAll({
+	models.User.findAll({
 		attributes: [
 			"id",
 			"firstName",
@@ -106,7 +105,7 @@ exports.getAllAdmin = (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
-	User.findOne({
+	models.User.findOne({
 		where: {
 			email: req.body.email
 		}
@@ -143,7 +142,7 @@ exports.login = async (req, res, next) => {
 exports.signup = async (req, res, next) => {
 	const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-	User.create({
+	models.User.create({
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
 		email: req.body.email,
