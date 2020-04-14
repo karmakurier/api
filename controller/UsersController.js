@@ -5,9 +5,9 @@ const jwt = require("jsonwebtoken");
 const models = require("../models/sequelize");
 
 exports.getById = async (req, res, next) => {
-	models.User.findOne({
+	models.user.findOne({
 		where: {
-			id: req.user.data.id
+			id: req.user.id
 		},
 		attributes: [
 			"firstName",
@@ -24,7 +24,7 @@ exports.getById = async (req, res, next) => {
 };
 
 exports.getByIdAdmin = async (req, res, next) => {
-	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
+	if (req.user.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
 	models.User.findOne({
 		where: {
@@ -45,9 +45,9 @@ exports.getByIdAdmin = async (req, res, next) => {
 };
 
 exports.updateByIdAdmin = async (req, res, next) => {
-	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
+	if (req.user.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
-	models.User.findOne({
+	models.user.findOne({
 		where: {
 			id: req.params.userId
 		},
@@ -69,7 +69,7 @@ exports.updateByIdAdmin = async (req, res, next) => {
 };
 
 exports.getAll = (req, res, next) => {
-	models.User.findAll().then(users => {
+	models.user.findAll().then(users => {
 		if (users.length === 0) return res.json({});
 		let sanitizedUser = [];
 		for (let i = 0; i < users.length; i += 1) {
@@ -86,9 +86,9 @@ exports.getAll = (req, res, next) => {
 };
 
 exports.getAllAdmin = (req, res, next) => {
-	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
+	if (req.user.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
-	models.User.findAll({
+	models.user.findAll({
 		attributes: [
 			"id",
 			"firstName",
@@ -104,45 +104,10 @@ exports.getAllAdmin = (req, res, next) => {
 	});
 };
 
-exports.login = async (req, res, next) => {
-	models.User.findOne({
-		where: {
-			email: req.body.email
-		}
-	}).then(async user => {
-		if (!user) return res.sendStatus(404);
-
-		const passwordIdentical = await bcrypt.compare(
-			req.body.password,
-			user.password
-		);
-
-		if (passwordIdentical) {
-			/**
-			 * Here we create the JWT token,
-			 * because the login data is correct
-			 * allowing the user to enter protected routes
-			 */
-			const token = jwt.sign(
-				{
-					data: {
-						id: user.id
-					}
-				},
-				process.env.JWT_SECRET,
-				{expiresIn: "240h"}
-			);
-			return res.json({token});
-		} else {
-			return res.sendStatus(404);
-		}
-	});
-};
-
 exports.signup = async (req, res, next) => {
 	const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-	models.User.create({
+	models.user.create({
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
 		email: req.body.email,

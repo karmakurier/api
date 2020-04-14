@@ -1,6 +1,23 @@
 var express = require("express");
 var router = express.Router();
 var multer = require("multer");
+var passport = require('passport');
+
+let isAuthenticated = (req, res, next) => {
+	passport.authenticate('jwt', { session: false }, (err, user) => {
+		
+		if (user) {
+			let plainuser = user.get({ plain: true});
+			if (plainuser.role !== "ROLE_USER" && plainuser.role !== "ROLE_ADMIN")
+				return res.sendStatus(403);
+			req.user = plainuser;
+			next();
+		} else {
+			res.status(401).send();
+		}
+	})(req, res, next);
+
+}
 
 // Controller
 const usersController = require("../controller/UsersController");
@@ -9,27 +26,12 @@ const tasksController = require("../controller/TasksController");
 // Models
 const models = require("../models/sequelize");
 
-router.use(function(req, res, next) {
-	if (req.user && !req.user.data.id) return res.sendStatus(404);
-	models.User.findOne({
-		where: {
-			id: req.user.data.id
-		}
-	}).then(user => {
-		if (user.role !== "ROLE_USER" && user.role !== "ROLE_ADMIN")
-			return res.sendStatus(403);
-
-		if (user) req.user.data.role = user.role;
-		next();
-	});
-});
-
 // Multer
 const storage = multer.diskStorage({
-	destination: function(req, file, cb) {
+	destination: function (req, file, cb) {
 		cb(null, "public/voicemails/");
 	},
-	filename: function(req, file, cb) {
+	filename: function (req, file, cb) {
 		let fileType = file.originalname.split(".")[
 			file.originalname.split(".").length - 1
 		];
@@ -41,7 +43,7 @@ const uploadVoicemail = multer({ storage: storage });
 // ROUTES
 
 // Me
-router.route("/me").get(usersController.getById);
+router.route("/me").get(isAuthenticated, usersController.getById);
 router.route("/admin/user").get(usersController.getAllAdmin);
 router
 	.route("/admin/user/:userId")
