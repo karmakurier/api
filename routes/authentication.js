@@ -22,7 +22,7 @@ module.exports = (passport) => {
     });
 
     router.post('/signup', usersController.signup);
-
+    
     return router;
 }
 

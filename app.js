@@ -34,11 +34,13 @@ initPassport(passport);
 console.log("Passport initialized")
 
 
-const publicRouter = require("./routes/public")(passport);
-const customerRouter = require("./routes/customer");
+const authenticationRouter = require("./routes/authentication")(passport);
+const userRouter = require("./routes/user");
 const missionRouter = require("./routes/mission")();
-app.use("/", publicRouter);
-app.use("/customer", customerRouter);
+const rolesRouter = require('./routes/roles');
+app.use("/", authenticationRouter);
+app.use("/users", userRouter);
 app.use('/mission', missionRouter);
+app.use('/roles', rolesRouter);
 
 module.exports = app;

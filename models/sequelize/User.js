@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				allowNull: false
 			},
-			street: {
+			address: {
 				type: DataTypes.STRING,
 				allowNull: false
 			},
@@ -37,23 +37,23 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.STRING,
 				allowNull: false
 			},
-			hasCar: {
-				type: DataTypes.INTEGER,
-				allowNull: false
-			},
-			hasBicycle: {
-				type: DataTypes.INTEGER,
-				allowNull: false
-			},
 			acceptedPrivacyStatement: {
+				type: DataTypes.BOOLEAN,
+				allowNull: false
+			},
+			allowedCalls: {
+				type: DataTypes.BOOLEAN,
+				allowNull: false
+			},
+			isVerified: {
 				type: DataTypes.INTEGER,
+				allowNull: false
+			},
+			smsConfirmed: {
+				type: DataTypes.BOOLEAN,
 				allowNull: false
 			},
 			password: {
-				type: DataTypes.STRING,
-				allowNull: false
-			},
-			role: {
 				type: DataTypes.STRING,
 				allowNull: false
 			}

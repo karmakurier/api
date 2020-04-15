@@ -107,20 +107,28 @@ exports.getAllAdmin = (req, res, next) => {
 exports.signup = async (req, res, next) => {
 	const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-	models.user.create({
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		email: req.body.email,
-		phone: req.body.phone,
-		zip: req.body.zip,
-		city: req.body.city,
-		street: req.body.street,
-		hasCar: req.body.hasCar === true ? 1 : 0,
-		hasBicycle: req.body.hasBicycle === true ? 1 : 0,
-		acceptedPrivacyStatement: req.body.privacy === true ? 1 : 0,
-		password: hashedPassword,
-		role: "ROLE_USER"
-	}).then(async user => {
-		return res.sendStatus(200);
+	models.role.findOne({ where: { name: "USER"}}).then(defaultRole => {
+		let plainRole = defaultRole.get({ plain: true});
+
+		models.user.create({
+			firstName: req.body.firstName,
+			lastName: req.body.lastName,
+			email: req.body.email,
+			phone: req.body.phone,
+			zip: req.body.zip,
+			city: req.body.city,
+			address: req.body.address,
+			acceptedPrivacyStatement: req.body.acceptedPrivacyStatement,
+			allowedCalls: req.body.allowedCalls,
+			isVerified: false,
+			smsConfirmed: false,
+			password: hashedPassword,
+			roleId: plainRole.id
+		}).then(async user => {
+			return res.send(user);
+		}).catch(e => {
+			console.log(e);
+			return res.status(500);
+		});
 	});
 };

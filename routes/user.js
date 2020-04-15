@@ -5,9 +5,10 @@ var passport = require('passport');
 
 let isAuthenticated = (req, res, next) => {
 	passport.authenticate('jwt', { session: false }, (err, user) => {
-		
 		if (user) {
 			let plainuser = user.get({ plain: true});
+			let role = user.getRole();
+			console.log(role);
 			if (plainuser.role !== "ROLE_USER" && plainuser.role !== "ROLE_ADMIN")
 				return res.sendStatus(403);
 			req.user = plainuser;
@@ -16,7 +17,6 @@ let isAuthenticated = (req, res, next) => {
 			res.status(401).send();
 		}
 	})(req, res, next);
-
 }
 
 // Controller
@@ -43,7 +43,17 @@ const uploadVoicemail = multer({ storage: storage });
 // ROUTES
 
 // Me
-router.route("/me").get(isAuthenticated, usersController.getById);
+router.get('/', (req, res, next) => {
+	models.user.findAll().then(users => {
+		res.send(users);
+	})
+})
+
+
+
+
+
+router.route("/me").get( usersController.getById);
 router.route("/admin/user").get(usersController.getAllAdmin);
 router
 	.route("/admin/user/:userId")

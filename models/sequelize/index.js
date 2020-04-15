@@ -31,8 +31,8 @@ Object.keys(db).forEach(modelName => {
 });
 
 
-//db.Role.hasMany(db.User);
-//db.User.belongsTo(db.Role);
+db.role.hasMany(db.user, {  onDelete: 'RESTRICT'});
+db.user.belongsTo(db.role, {  onDelete: 'RESTRICT'});
 
 
 db.sequelize = sequelize;
