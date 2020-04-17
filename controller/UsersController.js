@@ -13,7 +13,6 @@ exports.getById = async (req, res, next) => {
 			"firstName",
 			"lastName",
 			"email",
-			"role",
 			"createdAt",
 			"updatedAt"
 		]

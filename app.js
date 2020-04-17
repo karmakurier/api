@@ -7,6 +7,12 @@ const logger = require("morgan");
 const cors = require("cors");
 const passport = require('passport');
 const mongoose = require('mongoose');
+const seed = require('./seed/seed_dev');
+
+if(process.env.NODE_ENV == 'development'){
+	seed.seedDevelopment();
+}
+
 
 mongoose.connect(process.env.MONGODB);
 
