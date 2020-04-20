@@ -1,20 +1,18 @@
-// const { DateTime } = require("luxon");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 // Models
-const User = require("../models/User.js");
+const models = require("../models/sequelize");
 
 exports.getById = async (req, res, next) => {
-	User.findOne({
+	models.user.findOne({
 		where: {
-			id: req.user.data.id
+			id: req.user.id
 		},
 		attributes: [
 			"firstName",
 			"lastName",
 			"email",
-			"role",
 			"createdAt",
 			"updatedAt"
 		]
@@ -25,9 +23,9 @@ exports.getById = async (req, res, next) => {
 };
 
 exports.getByIdAdmin = async (req, res, next) => {
-	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
+	if (req.user.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
-	User.findOne({
+	models.User.findOne({
 		where: {
 			id: req.params.userId
 		},
@@ -46,9 +44,9 @@ exports.getByIdAdmin = async (req, res, next) => {
 };
 
 exports.updateByIdAdmin = async (req, res, next) => {
-	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
+	if (req.user.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
-	User.findOne({
+	models.user.findOne({
 		where: {
 			id: req.params.userId
 		},
@@ -70,7 +68,7 @@ exports.updateByIdAdmin = async (req, res, next) => {
 };
 
 exports.getAll = (req, res, next) => {
-	User.findAll().then(users => {
+	models.user.findAll().then(users => {
 		if (users.length === 0) return res.json({});
 		let sanitizedUser = [];
 		for (let i = 0; i < users.length; i += 1) {
@@ -87,9 +85,9 @@ exports.getAll = (req, res, next) => {
 };
 
 exports.getAllAdmin = (req, res, next) => {
-	if (req.user.data.role !== "ROLE_ADMIN") return res.sendStatus(403);
+	if (req.user.role !== "ROLE_ADMIN") return res.sendStatus(403);
 
-	User.findAll({
+	models.user.findAll({
 		attributes: [
 			"id",
 			"firstName",
@@ -105,58 +103,31 @@ exports.getAllAdmin = (req, res, next) => {
 	});
 };
 
-exports.login = async (req, res, next) => {
-	User.findOne({
-		where: {
-			email: req.body.email
-		}
-	}).then(async user => {
-		if (!user) return res.sendStatus(404);
-
-		const passwordIdentical = await bcrypt.compare(
-			req.body.password,
-			user.password
-		);
-
-		if (passwordIdentical) {
-			/**
-			 * Here we create the JWT token,
-			 * because the login data is correct
-			 * allowing the user to enter protected routes
-			 */
-			const token = jwt.sign(
-				{
-					data: {
-						id: user.id
-					}
-				},
-				process.env.JWT_SECRET,
-				{expiresIn: "240h"}
-			);
-			return res.json({token});
-		} else {
-			return res.sendStatus(404);
-		}
-	});
-};
-
 exports.signup = async (req, res, next) => {
 	const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-	User.create({
-		firstName: req.body.firstName,
-		lastName: req.body.lastName,
-		email: req.body.email,
-		phone: req.body.phone,
-		zip: req.body.zip,
-		city: req.body.city,
-		street: req.body.street,
-		hasCar: req.body.hasCar === true ? 1 : 0,
-		hasBicycle: req.body.hasBicycle === true ? 1 : 0,
-		acceptedPrivacyStatement: req.body.privacy === true ? 1 : 0,
-		password: hashedPassword,
-		role: "ROLE_USER"
-	}).then(async user => {
-		return res.sendStatus(200);
+	models.role.findOne({ where: { name: "USER"}}).then(defaultRole => {
+		let plainRole = defaultRole.get({ plain: true});
+
+		models.user.create({
+			firstName: req.body.firstName,
+			lastName: req.body.lastName,
+			email: req.body.email,
+			phone: req.body.phone,
+			zip: req.body.zip,
+			city: req.body.city,
+			address: req.body.address,
+			acceptedPrivacyStatement: req.body.acceptedPrivacyStatement,
+			allowedCalls: req.body.allowedCalls,
+			isVerified: false,
+			smsConfirmed: false,
+			password: hashedPassword,
+			roleId: plainRole.id
+		}).then(async user => {
+			return res.send(user);
+		}).catch(e => {
+			console.log(e);
+			return res.status(500);
+		});
 	});
 };

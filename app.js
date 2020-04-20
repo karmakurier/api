@@ -5,23 +5,22 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
-const jwtExpress = require("express-jwt");
+const passport = require('passport');
+const mongoose = require('mongoose');
+const seed = require('./seed/seed_dev');
 
-const publicRouter = require("./routes/public");
-const customerRouter = require("./routes/customer");
+if(process.env.NODE_ENV == 'development'){
+	seed.seedDevelopment();
+}
+
+
+mongoose.connect(process.env.MONGODB);
 
 const app = express();
-
 const corsOptions = {
 	origin: ["http://localhost:8080"],
 	optionsSuccessStatus: 200
 };
-
-app.use(
-	jwtExpress({ secret: process.env.JWT_SECRET }).unless({
-		path: ["/login", "/signup", "/customer/favicon.ico", /\/voicemails*/]
-	})
-);
 
 app.use(cors(corsOptions));
 
@@ -31,7 +30,23 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", publicRouter);
-app.use("/customer", customerRouter);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Initialize Passport
+var initPassport = require('./passport/init');
+initPassport(passport);
+console.log("Passport initialized")
+
+
+const authenticationRouter = require("./routes/authentication")(passport);
+const userRouter = require("./routes/user");
+const missionRouter = require("./routes/mission")();
+const rolesRouter = require('./routes/roles');
+app.use("/", authenticationRouter);
+app.use("/users", userRouter);
+app.use('/mission', missionRouter);
+app.use('/roles', rolesRouter);
 
 module.exports = app;
