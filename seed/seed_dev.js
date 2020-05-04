@@ -24,7 +24,9 @@ module.exports = {
         }
 
         // Seed initial User
-        let foundUser = sqlModels.user.findOne({ where: { email: 'test@a.de' } });
+        console.log("Test");
+        let foundUser = await sqlModels.user.findOne({ where: { email: 'test@a.de' } });
+        console.log(foundUser);
         if (!foundUser) {
             await sqlModels.role.findOne({ where: { name: "USER" } }).then(defaultRole => {
                 let plainRole = defaultRole.get({ plain: true });
@@ -45,6 +47,7 @@ module.exports = {
                     roleId: plainRole.id
                 });
             });
+            console.log("Seeder: seeded initial user");
         } else {
             console.log("Seeder: Default User is already seeded.");
         }
