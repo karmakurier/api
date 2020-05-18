@@ -44,9 +44,11 @@ const authenticationRouter = require("./routes/authentication")(passport);
 const userRouter = require("./routes/user");
 const missionRouter = require("./routes/mission")();
 const rolesRouter = require('./routes/roles');
+const statusRouter = require('./routes/status');
 app.use("/", authenticationRouter);
 app.use("/users", userRouter);
 app.use('/mission', missionRouter);
 app.use('/roles', rolesRouter);
+app.use('status', statusRouter)
 
 module.exports = app;
