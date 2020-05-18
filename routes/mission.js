@@ -18,6 +18,8 @@ module.exports = (passport) => {
     router.delete('/:id', authHelper.isAuthenticatedAdmin, missionController.delete);
     // assign a helper to a mission
     router.post('/:id/assign', authHelper.isAuthenticatedUser, missionController.assign);
+    // assign a helper to a mission
+    router.post('/:id/updateStatus', authHelper.isAuthenticatedUser, missionController.updateStatus);
     return router;
 }
 

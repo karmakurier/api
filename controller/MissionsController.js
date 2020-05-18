@@ -83,6 +83,29 @@ exports.assign = (req, res, next) => {
     });
 }
 
+exports.updateStatus = (req, res, next) => {
+    let user = req.user;
+    let new_status = req.body.statusId;
+
+    Mission.findById(req.params.id, (err, mission) => {
+        
+
+        if (mission.helperId) {
+            mission.helperId = new_helper;
+
+            mission.update(function (err, new_mission) {
+                if (!err) {
+                    res.send(new_mission);
+                } else {
+                    res.sendStatus(500);
+                }
+            });
+        } else {
+            res.status(403).send({ message: "Mission is already assigned to a user." })
+        }
+    });
+}
+
 exports.create = (req, res, next) => {
     var new_mission = new Mission({
         name: req.body.name,
@@ -92,8 +115,8 @@ exports.create = (req, res, next) => {
         address: req.body.address,
         locationX: 0,
         locationY: 0,
-        creatorId: req.user.id,
-        supporterId: req.body.supporterId ? req.body.supporterId : null,
+        creatorId: req.body.creatorId,
+        supporterId: req.user.id,
         helperId: null,
         paymentMethodId: req.body.paymentMethodId,
         status: req.body.stat,
