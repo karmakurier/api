@@ -47,11 +47,13 @@ const userRouter = require("./routes/user");
 const missionRouter = require("./routes/mission")();
 const rolesRouter = require('./routes/roles');
 const statusRouter = require('./routes/status');
+const paymentMethodsRouter = require('./routes/paymentMethod');
 app.use("/", authenticationRouter);
 app.use("/users", userRouter);
 app.use('/mission', missionRouter);
 app.use('/roles', rolesRouter);
 app.use('/status', statusRouter);
+app.use('/paymentMethod', paymentMethodsRouter);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 module.exports = app;
