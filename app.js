@@ -8,6 +8,8 @@ const cors = require("cors");
 const passport = require('passport');
 const mongoose = require('mongoose');
 const seed = require('./seed/seed_dev');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 if(process.env.NODE_ENV == 'development'){
 	seed.seedDevelopment();
@@ -49,6 +51,7 @@ app.use("/", authenticationRouter);
 app.use("/users", userRouter);
 app.use('/mission', missionRouter);
 app.use('/roles', rolesRouter);
-app.use('status', statusRouter)
+app.use('/status', statusRouter);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 module.exports = app;
