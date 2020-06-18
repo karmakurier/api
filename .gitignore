@@ -62,3 +62,6 @@ typings/
 
 # ignore local sqlite
 development.sqlite
+
+# VSCode
+.vscode
