@@ -8,6 +8,8 @@ const cors = require("cors");
 const passport = require('passport');
 const mongoose = require('mongoose');
 const seed = require('./seed/seed_dev');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
 if(process.env.NODE_ENV == 'development'){
 	seed.seedDevelopment();
@@ -44,9 +46,14 @@ const authenticationRouter = require("./routes/authentication")(passport);
 const userRouter = require("./routes/user");
 const missionRouter = require("./routes/mission")();
 const rolesRouter = require('./routes/roles');
+const statusRouter = require('./routes/status');
+const paymentMethodsRouter = require('./routes/paymentMethod');
 app.use("/", authenticationRouter);
 app.use("/users", userRouter);
 app.use('/mission', missionRouter);
 app.use('/roles', rolesRouter);
+app.use('/status', statusRouter);
+app.use('/paymentMethod', paymentMethodsRouter);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 module.exports = app;

@@ -9,12 +9,16 @@ module.exports = {
         passport.authenticate('jwt', { session: false }, (err, user) => {
             if (user) {
                 let plainuser = user.get({ plain: true });
+                console.log(user);
                 user.getRole().then(foundRole => {
                     let plainRole = foundRole.get({ plain: true });
-                    if (plainRole.name !== "USER" || plainRole.name !== "ADMIN")
+                    if (plainRole.name == "USER" || plainRole.name == "ADMIN") {
+                        req.user = plainuser;
+                        next();
+                    } else {
                         return res.sendStatus(403);
-                    req.user = plainuser;
-                    next();
+                    }   
+
                 });
             } else {
                 res.status(401).send();
@@ -29,7 +33,7 @@ module.exports = {
                 let plainuser = user.get({ plain: true });
                 user.getRole().then(foundRole => {
                     let plainRole = foundRole.get({ plain: true });
-                    if (plainuser.name !== "ADMIN")
+                    if (plainuser.name != "ADMIN")
                         return res.sendStatus(403);
                     req.user = plainuser;
                     next();

@@ -1,21 +1,22 @@
 const models = require('../models/sequelize');
 const rolesController = require('../controller/RolesController');
+const authHelper = require('../helper/authenticationHelper');
 const express = require("express");
 const router = express.Router();
 
 // READ all
-router.get('/', rolesController.getAll);
+router.get('/', authHelper.isAuthenticatedUser, rolesController.getAll);
 
 // CREATE single
-router.post('/', rolesController.create);
+router.post('/', authHelper.isAuthenticatedAdmin, rolesController.create);
 
 // READ Single
-router.get('/:id', rolesController.getById);
+router.get('/:id', authHelper.isAuthenticatedUser,  rolesController.getById);
 
 // UPDATE single
-router.put('/:id', rolesController.update);
+router.put('/:id', authHelper.isAuthenticatedAdmin, rolesController.update);
 
 // DELETE single
-router.delete('/:id', rolesController.delete);
+router.delete('/:id', authHelper.isAuthenticatedAdmin,  rolesController.delete);
 
 module.exports = router;

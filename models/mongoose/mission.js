@@ -11,6 +11,7 @@ var missionsSchema = mongoose.Schema({
     locationY: Number,
     creatorId: Number,
     helperId: Number,
+    supporterId: Number,
     paymentMethod: { type: Schema.Types.ObjectId, ref: 'PaymentMethod'},
     status: { type: Schema.Types.ObjectId, ref: 'Status'},
     karmaPoints: Number,
