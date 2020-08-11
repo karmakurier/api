@@ -1,58 +1,903 @@
 swagger: "2.0"
 info:
-  description: "This is a prototype Karmakurier server.  You can find out more about Karmakurier at [http://karmakurier.org]"
+  description: "API Definition for karmakurier app."
   version: "1.0.0"
-  title: "Karmakurier"
-  termsOfService: "http://karmakurier.org/"
-  contact:
-    email: "can.kaymakci@live.de"
-  license:
-    name: "Apache 2.0"
-    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "karmakurier.org"
-basePath: "/v1"
+  title: "karmakurier.org"
+host: "api.karmakurier.org"
+basePath: "/api"
 tags:
-- name: "missions"
-  description: "Everything about Missions"
-  externalDocs:
-    description: "Your key to the world of missions in Karmakurier"
-    url: "http://karmakurier.org"
-- name: "user"
-  description: "Operations about user"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
-- name: "roles"
-  description: "Operations about roles"
-  externalDocs:
-    description: "Find out more about our store"
-    url: "http://swagger.io"
+- name: "Authentication"
+  description: "Authenticates users"
+- name: "Users"
+  description: "Users are the identity of the people registered on the platform."
+- name: "FraudReports"
+  description: "All operations related to fraud reporting"
+- name: "Roles"
+  description: "Roles define which permissions an user has. Write access is only granted to admins."
+- name: "MissionStatus"
+  description: "The mission status defines in which state the mission can be in. Write access is only granted to admins."
+- name: "Category"
+  description: "Each mission is assigned to a category to make finding matching missions easier. Write access is only granted to admins."
+- name: "MissionType"
+  description: "Each mission has a type which determines if the creator is seeking or offering help."
+- name: "Missions"
+  description: "Missions hold all information about an inquiry and who is working on it."
 schemes:
 - "https"
 - "http"
 paths:
+  /login:
+    post:
+      tags:
+      - "Authentication"
+      summary: "Login"
+      description: ""
+      operationId: "login"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "login object to post to server"
+        required: true
+        schema:
+          $ref: "#/definitions/LoginRequest"
+      responses:
+        405:
+          description: "Invalid input"
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+  /roles:
+    get:
+      tags:
+      - "Roles"
+      summary: "Get all roles"
+      description: ""
+      operationId: "getAllRoles"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Role"
+      security:
+        - api_key: []
+    post:
+      tags:
+      - "Roles"
+      summary: "Create new roles"
+      description: ""
+      operationId: "createrolesstate"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Updated roles object"
+          required: true
+          schema:
+            $ref: "#/definitions/Role"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Role"
+      security:
+        - api_key: []
+  /roles/{id}:
+    get:
+      tags:
+      - "Roles"
+      summary: "Get role"
+      description: ""
+      operationId: "getRoleByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Role"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "Role not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+      - "Roles"
+      summary: "Update role"
+      description: "This can only be done by admin."
+      operationId: "updateRolebyName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Role that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/Role"
+      responses:
+        400:
+          description: "Invalid user supplied"
+        404:
+          description: "User not found"
+      security:
+        - api_key: []
+    delete:
+      tags:
+      - "Roles"
+      summary: "Deletes a role"
+      description: ""
+      operationId: "deleteRoleFromUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "username to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        204:
+          description: "Success"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "role not found"
+      security:
+        - api_key: []
+  /missionstatus:
+    get:
+      tags:
+      - "MissionStatus"
+      summary: "Get all statuses"
+      description: ""
+      operationId: "getAllStatuses"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Status"
+      security:
+        - api_key: []
+    post:
+      tags:
+      - "MissionStatus"
+      summary: "Create new missionstatus"
+      description: ""
+      operationId: "missionstatusCreate"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Updated missionstatus object"
+          required: true
+          schema:
+            $ref: "#/definitions/Status"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Status"
+      security:
+        - api_key: []
+  /missionstatus/{id}:
+    get:
+      tags:
+      - "MissionStatus"
+      summary: "Get status"
+      description: ""
+      operationId: "getStatusByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The name that needs to be fetched. Use user1 for testing. "
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Status"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "Role not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+      - "MissionStatus"
+      summary: "Update role"
+      description: "This can only be done by admin."
+      operationId: "updateStatusbyName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Status that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated status object"
+        required: true
+        schema:
+          $ref: "#/definitions/Status"
+      responses:
+        400:
+          description: "Invalid status supplied"
+        404:
+          description: "Status not found"
+      security:
+        - api_key: []
+    delete:
+      tags:
+      - "MissionStatus"
+      summary: "Deletes a status"
+      description: ""
+      operationId: "deleteStatusFromUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "status to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        204:
+          description: "Success"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "status not found" 
+      security:
+        - api_key: []
+  /category:
+    get:
+      tags:
+      - "Category"
+      summary: "Get all category"
+      description: ""
+      operationId: "getAllcategory"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Category"
+      security:
+        - api_key: []
+    post:
+      tags:
+      - "Category"
+      summary: "Create new category"
+      description: ""
+      operationId: "createcategory"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Updated category object"
+          required: true
+          schema:
+            $ref: "#/definitions/Category"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Category"
+      security:
+        - api_key: []
+  /category/{id}:
+    get:
+      tags:
+      - "Category"
+      summary: "Get category"
+      description: ""
+      operationId: "getcategoryByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The name that needs to be fetched. "
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Category"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "category not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+      - "Category"
+      summary: "Update category"
+      description: "This can only be done by admin."
+      operationId: "updatecategorybyName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "category that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated status object"
+        required: true
+        schema:
+          $ref: "#/definitions/Category"
+      responses:
+        400:
+          description: "Invalid status supplied"
+        404:
+          description: "category not found"
+      security:
+        - api_key: []
+    delete:
+      tags:
+      - "Category"
+      summary: "Deletes a category"
+      description: ""
+      operationId: "deletecategoryFromUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "category to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        204:
+          description: "Success"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "category not found" 
+      security:
+        - api_key: []
+  /missiontype:
+    get:
+      tags:
+      - "MissionType"
+      summary: "Get all missiontype"
+      description: ""
+      operationId: "getAllmissiontype"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MissionType"
+      security:
+        - api_key: []
+    post:
+      tags:
+      - "MissionType"
+      summary: "Create new missiontype"
+      description: ""
+      operationId: "createmissiontype"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Updated missiontype object"
+          required: true
+          schema:
+            $ref: "#/definitions/MissionType"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MissionType"
+      security:
+        - api_key: []
+  /missiontype/{id}:
+    get:
+      tags:
+      - "MissionType"
+      summary: "Get missiontype"
+      description: ""
+      operationId: "getmissiontypeByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The name that needs to be fetched. "
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MissionType"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "missiontype not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+      - "MissionType"
+      summary: "Update missiontype"
+      description: "This can only be done by admin."
+      operationId: "updatemissiontypebyName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "missiontype that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated status object"
+        required: true
+        schema:
+          $ref: "#/definitions/MissionType"
+      responses:
+        400:
+          description: "Invalid status supplied"
+        404:
+          description: "missiontype not found"
+      security:
+        - api_key: []
+    delete:
+      tags:
+      - "MissionType"
+      summary: "Deletes a missiontype"
+      description: ""
+      operationId: "deletemissiontypeFromUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "missiontype to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        204:
+          description: "Success"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "missiontype not found" 
+      security:
+        - api_key: []
+  /fraudcategory:
+    get:
+      tags:
+      - "FraudReports"
+      summary: "Get all fraudcategory"
+      description: ""
+      operationId: "getAllfraudcategory"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudCategory"
+      security:
+        - api_key: []
+    post:
+      tags:
+      - "FraudReports"
+      summary: "Create new fraudcategory"
+      description: ""
+      operationId: "createfraudcategory"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Updated fraudcategory object"
+          required: true
+          schema:
+            $ref: "#/definitions/FraudCategory"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudCategory"
+      security:
+        - api_key: []
+  /fraudcategory/{id}:
+    get:
+      tags:
+      - "FraudReports"
+      summary: "Get fraudcategory"
+      description: ""
+      operationId: "getfraudcategoryByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The name that needs to be fetched. "
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudCategory"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "fraudcategory not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+      - "FraudReports"
+      summary: "Update fraudcategory"
+      description: "This can only be done by admin."
+      operationId: "updatefraudcategorybyName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "fraudcategory that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated fraudcategory object"
+        required: true
+        schema:
+          $ref: "#/definitions/FraudCategory"
+      responses:
+        400:
+          description: "Invalid status supplied"
+        404:
+          description: "fraudcategory not found"
+      security:
+        - api_key: []
+    delete:
+      tags:
+      - "FraudReports"
+      summary: "Deletes a fraudcategory"
+      description: ""
+      operationId: "deletefraudcategoryFromUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "fraudcategory to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        204:
+          description: "Success"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "fraudcategory not found" 
+      security:
+        - api_key: []
+  /fraudstate:
+    get:
+      tags:
+      - "FraudReports"
+      summary: "Get all fraudstate"
+      description: ""
+      operationId: "getAllfraudstate"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudState"
+      security:
+        - api_key: []
+    post:
+      tags:
+      - "FraudReports"
+      summary: "Create new fraudstate"
+      description: ""
+      operationId: "createfraudstate"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Updated fraudstate object"
+          required: true
+          schema:
+            $ref: "#/definitions/FraudState"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudState"
+      security:
+        - api_key: []
+  /fraudstate/{id}:
+    get:
+      tags:
+      - "FraudReports"
+      summary: "Get fraudstate"
+      description: ""
+      operationId: "getFraudStateByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The name that needs to be fetched. "
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudState"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "fraudstate not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+      - "FraudReports"
+      summary: "Update fraudstate"
+      description: "This can only be done by admin."
+      operationId: "updatefraudstatebyName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "fraudstate that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated fraudstate object"
+        required: true
+        schema:
+          $ref: "#/definitions/FraudState"
+      responses:
+        400:
+          description: "Invalid status supplied"
+        404:
+          description: "fraudstate not found"
+      security:
+        - api_key: []
+    delete:
+      tags:
+      - "FraudReports"
+      summary: "Deletes a fraudstate"
+      description: ""
+      operationId: "deletefraudstateFromUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "fraudstate to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        204:
+          description: "Success"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "fraudstate not found" 
+      security:
+        - api_key: []
+  /fraudreport:
+    get:
+      tags:
+      - "FraudReports"
+      summary: "Get all fraudreport"
+      description: ""
+      operationId: "getAllfraudreport"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudReport"
+      security:
+        - api_key: []
+    post:
+      tags:
+      - "FraudReports"
+      summary: "Create new fraudreport"
+      description: ""
+      operationId: "createfraudreport"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Updated fraudreport object"
+          required: true
+          schema:
+            $ref: "#/definitions/FraudReport"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudReport"
+      security:
+        - api_key: []
+  /fraudreport/{id}:
+    get:
+      tags:
+      - "FraudReports"
+      summary: "Get fraudreport"
+      description: ""
+      operationId: "getfraudreportByName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "The name that needs to be fetched. "
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/FraudReport"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "fraudreport not found"
+      security:
+        - api_key: []
+    put:
+      tags:
+      - "FraudReports"
+      summary: "Update fraudreport"
+      description: "This can only be done by admin."
+      operationId: "updatefraudreportbyName"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "fraudstate that need to be updated"
+        required: true
+        type: "integer"
+      - in: "body"
+        name: "body"
+        description: "Updated fraudreport object"
+        required: true
+        schema:
+          $ref: "#/definitions/FraudReport"
+      responses:
+        400:
+          description: "Invalid status supplied"
+        404:
+          description: "fraudstate not found"
+      security:
+        - api_key: []
+    delete:
+      tags:
+      - "FraudReports"
+      summary: "Deletes a FraudReport"
+      description: ""
+      operationId: "deletefraudreportFromUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "fraudreport to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        204:
+          description: "Success"
+        400:
+          description: "Invalid id supplied"
+        404:
+          description: "fraudreport not found" 
+      security:
+        - api_key: []
   /missions:
     get:
       tags:
-      - "missions"
-      summary: "Get all missions"
+      - "Missions"
+      summary: "Get missions"
       description: ""
       operationId: "getAllMissions"
+      parameters:
+      - name: "categoryId"
+        in: "query"
+        description: "id of category to find matching missions"
+        required: false
+        type: "integer"
+        format: "int64"
+      - name: "statusId"
+        in: "query"
+        description: "id of status to find matching missions"
+        required: false
+        type: "integer"
+        format: "int64"
+      - name: "proximity"
+        in: "query"
+        description: "km from user location"
+        required: false
+        type: "integer"
+        format: "int64"
       produces:
-      - "application/xml"
       - "application/json"
       responses:
         200:
           description: "successful operation"
           schema:
             $ref: "#/definitions/Mission"
-        400:
-          description: "Invalid id supplied"
+        401:
+          description: "Unauthorized"
         404:
           description: "Missions not found"
+      security:
+        - api_key: []
     post:
       tags:
-      - "missions"
+      - "Missions"
       summary: "Add a new mission to the database"
       description: "A new mission can be created by initializing a new mission with the data that has to be either filled into a form or can be posted via HTTP"
       operationId: "addMission"
@@ -71,117 +916,15 @@ paths:
         405:
           description: "Invalid input"
       security:
-      - karma_auth:
-        - "write:missions"
-        - "read:missions"
-    put:
-      tags:
-      - "missions"
-      summary: "Update an existing Mission"
-      description: "Update a mission when something is happened like an event or when the mission was accomplished. Normally this method is going to be used automatically or by an admin"
-      operationId: "updateMission"
-      consumes:
-      - "application/json"
-      - "application/xml"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Mission that needs to be updated to an event"
-        required: true
-        schema:
-          $ref: "#/definitions/Mission"
-      responses:
-        400:
-          description: "Invalid ID supplied"
-        404:
-          description: "Mission not found"
-        405:
-          description: "Validation exception"
-      security:
-      - karma_auth:
-        - "write:missions"
-        - "read:missions"
-  /missions/findByStatus:
-    get:
-      tags:
-      - "missions"
-      summary: "Finds Missions by status"
-      description: "Multiple status values can be provided with comma separated strings"
-      operationId: "findMissionsByStatus"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "status"
-        in: "query"
-        description: "Status values that need to be considered for filter"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-          enum:
-          - "open"
-          - "pending"
-          - "done"
-          default: "available"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Mission"
-        400:
-          description: "Invalid status value"
-      security:
-      - karma_auth:
-        - "write:missions"
-        - "read:missions"
-  /missions/findByCategories:
-    get:
-      tags:
-      - "missions"
-      summary: "Finds Missions by Categories"
-      description: "Muliple categories can be provided with comma separated strings"
-      operationId: "findMissionByCategories"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "categories"
-        in: "query"
-        description: "Categories to filter by"
-        required: true
-        type: "array"
-        items:
-          type: "string"
-        collectionFormat: "multi"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Mission"
-        400:
-          description: "Invalid tag value"
-      security:
-      - karma_auth:
-        - "write:missions"
-        - "read:missions"
+        - api_key: []
   /missions/{id}:
     get:
       tags:
-      - "missions"
+      - "Missions"
       summary: "Find mission by ID"
       description: "Returns a single mission"
       operationId: "getMissionById"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "id"
@@ -201,49 +944,45 @@ paths:
           description: "Mission not found"
       security:
       - api_key: []
-    post:
+    put:
       tags:
-      - "missions"
-      summary: "Updates/Posts a mission with form data"
-      description: ""
-      operationId: "updateMissionWithForm"
+      - "Missions"
+      summary: "Update an existing Mission"
+      description: "Update a mission when something is happened like an event or when the mission was accomplished. Normally this method is going to be used automatically or by an admin"
+      operationId: "updateMission"
       consumes:
-      - "application/x-www-form-urlencoded"
+      - "application/json"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "id"
         in: "path"
-        description: "ID of mission that needs to be updated"
+        description: "ID of mission to return"
         required: true
         type: "integer"
         format: "int64"
-      - name: "name"
-        in: "formData"
-        description: "Updated name of the mission"
-        required: false
-        type: "string"
-      - name: "status"
-        in: "formData"
-        description: "Updated status of the mission"
-        required: false
-        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Mission that needs to be updated to an event"
+        required: true
+        schema:
+          $ref: "#/definitions/Mission"
       responses:
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Mission not found"
         405:
-          description: "Invalid input"
+          description: "Validation exception"
       security:
-      - karma_auth:
-        - "write:missions"
-        - "read:missions"
+        - api_key: []
     delete:
       tags:
-      - "missions"
+      - "Missions"
       summary: "Deletes a mission"
       description: ""
       operationId: "deleteMission"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "api_key"
@@ -262,73 +1001,15 @@ paths:
         404:
           description: "Mission not found"
       security:
-      - karma_auth:
-        - "write:missions"
-        - "read:missions"
-  /missions/{id}/uploadReceipt:
-    post:
-      tags:
-      - "missions"
-      summary: "uploads an receipts"
-      description: ""
-      operationId: "uploadFile"
-      consumes:
-      - "multipart/form-data"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "id"
-        in: "path"
-        description: "ID of mission to update"
-        required: true
-        type: "integer"
-        format: "int64"
-      - name: "additionalMetadata"
-        in: "formData"
-        description: "Additional data to pass to server"
-        required: false
-        type: "string"
-      - name: "file"
-        in: "formData"
-        description: "file to upload"
-        required: false
-        type: "file"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ApiResponse"
-      security:
-      - karma_auth:
-        - "write:missions"
-        - "read:missions"
+        - api_key: []
   /user:
-    get:
-      tags:
-      - "user"
-      summary: "Get all users"
-      description: ""
-      operationId: "getAllUsers"
-      produces:
-      - "application/xml"
-      - "application/json"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid id supplied"
-        404:
-          description: "Users not found"
     post:
       tags:
-      - "user"
+      - "Users"
       summary: "Create user"
       description: "This can only be done by the logged in user."
       operationId: "createUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - in: "body"
@@ -340,348 +1021,154 @@ paths:
       responses:
         default:
           description: "successful operation"
-  /user/createWithArray:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "user"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/User"
-      responses:
-        default:
-          description: "successful operation"
-  /user/login:
+      security:
+        - api_key: []
+  /user/me:
     get:
       tags:
-      - "user"
-      summary: "Logs user into the system"
+      - "Users"
+      summary: "Gets current user"
       description: ""
-      operationId: "loginUser"
+      operationId: "getMe"
       produces:
-      - "application/xml"
       - "application/json"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
       responses:
-        200:
+        "200":
           description: "successful operation"
           schema:
-            type: "string"
-          headers:
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-        400:
-          description: "Invalid username/password supplied"
-  /user/logout:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+      security:
+        - api_key: []
+  /user/me/resetPassword:
     get:
       tags:
-      - "user"
-      summary: "Logs out current logged in user session"
+      - "Users"
+      summary: "Resets the password of the current user"
       description: ""
-      operationId: "logoutUser"
+      operationId: "resetPW"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/ResetPWRequest"
       produces:
-      - "application/xml"
       - "application/json"
-      parameters: []
       responses:
-        default:
+        "200":
           description: "successful operation"
+      security:
+        - api_key: []
+  /user/me/chatToken:
+      get:
+        tags:
+        - "Users"
+        summary: "Gets matrix token for current user"
+        description: ""
+        operationId: "getMyChatToken"
+        produces:
+        - "application/json"
+        responses:
+          "200":
+            description: "successful operation"
+            schema:
+              $ref: "#/definitions/ChatTokenResponse"
+        security:
+          - api_key: []
   /user/{id}:
     get:
       tags:
-      - "user"
+      - "Users"
       summary: "Get user by id"
       description: ""
-      operationId: "getUserById"
+      operationId: "getUserByName"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "id"
         in: "path"
-        description: "The id that needs to be fetched. Use id1 for testing. "
+        description: "The id that needs to be fetched. "
         required: true
-        type: "string"
+        type: "integer"
       responses:
-        200:
+        "200":
           description: "successful operation"
           schema:
             $ref: "#/definitions/User"
-        400:
-          description: "Invalid id supplied"
-        404:
+        "400":
+          description: "Invalid username supplied"
+        "404":
           description: "User not found"
+      security:
+        - api_key: []
     put:
       tags:
-      - "user"
+      - "Users"
       summary: "Updated user"
-      description: "This can only be done by the admin."
+      description: "This can only be done by the logged in user."
       operationId: "updateUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "id"
         in: "path"
-        description: "id that need to be updated"
+        description: "name that need to be updated"
         required: true
-        type: "string"
+        type: "integer"
       - in: "body"
         name: "body"
-        description: "Updated user object"
+        description: "Update user object"
         required: true
         schema:
           $ref: "#/definitions/User"
       responses:
-        400:
+        "400":
           description: "Invalid user supplied"
-        404:
+        "404":
           description: "User not found"
+      security:
+        - api_key: []
     delete:
       tags:
-      - "user"
+      - "Users"
       summary: "Delete user"
       description: "This can only be done by the logged in user."
       operationId: "deleteUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
       - name: "id"
         in: "path"
-        description: "The id that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/name/{username}:
-    get:
-      tags:
-      - "user"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-    put:
-      tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUserbyName"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUserByName"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
         description: "The name that needs to be deleted"
         required: true
-        type: "string"
-      responses:
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-  /user/roles:
-    get:
-      tags:
-      - "roles"
-      summary: "Get all roles from users"
-      description: ""
-      operationId: "getAllRoles"
-      produces:
-      - "application/xml"
-      - "application/json"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Role"
-  /user/roles/{name}:
-    get:
-      tags:
-      - "roles"
-      summary: "Get role by user name"
-      description: ""
-      operationId: "getRoleByName"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        200:
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Role"
-        400:
-          description: "Invalid username supplied"
-        404:
-          description: "User not found"
-    put:
-      tags:
-      - "roles"
-      summary: "Updated user role"
-      description: "This can only be done by admin."
-      operationId: "updateRolebyName"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "name"
-        in: "path"
-        description: "Role that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
-      responses:
-        400:
-          description: "Invalid user supplied"
-        404:
-          description: "User not found"
-    delete:
-      tags:
-      - "roles"
-      summary: "Deletes a role from user"
-      description: ""
-      operationId: "deleteRoleFromUser"
-      produces:
-      - "application/xml"
-      - "application/json"
-      parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
-      - name: "name"
-        in: "path"
-        description: "username to delete"
-        required: true
         type: "integer"
-        format: "int64"
       responses:
-        400:
-          description: "Invalid nae supplied"
-        404:
-          description: "User not found"      
-  
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+      security:
+        - api_key: []
 securityDefinitions:
-  karma_auth:
-    type: "oauth2"
-    authorizationUrl: "http://karmakurier.org/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:missions: "modify missions in your account"
-      read:missions: "show your missions"
   api_key:
     type: "apiKey"
-    name: "api_key"
+    name: "Authorization"
     in: "header"
 definitions:
+  Status:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      description:
+        type: "string"
   Category:
     type: "object"
     properties:
@@ -690,47 +1177,13 @@ definitions:
         format: "int64"
       name:
         type: "string"
-      description:
-        type: "string"
-    xml:
-      name: "Category"
-  User:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
-      role:
-        type: "string"
-    xml:
-      name: "User"
-  Receipt:
+  MissionType:
     type: "object"
     properties:
       id:
         type: "integer"
         format: "int64"
       name:
-        type: "string"
-      createdAt:
-        type: "number"
-      url:
         type: "string"
   Role:
     type: "object"
@@ -739,75 +1192,156 @@ definitions:
         type: "integer"
         format: "int64"
       name:
+        type: "string"  
+  LoginRequest:
+    type: "object"
+    properties:
+      email:
         type: "string"
-  Item:
+      password:
+        type: "string"  
+  FraudState:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      description:
+        type: "string"  
+  FraudCategory:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      description:
+        type: "string"  
+  FraudReport:
+    type: "object"
+    properties:
+      description:
+        type: "string"
+      missionId:
+        type: "integer"
+      fraudCategoryId:
+        type: "integer"
+      fraudCategory:
+        $ref: "#/definitions/FraudCategory"
+      fraudStateId:
+        type: "integer"
+      fraudState:
+        $ref: "#/definitions/FraudState"
+      reporterId:
+        type: "integer"
+      reporter:
+        $ref: "#/definitions/User"
+      editorId:
+        type: "integer"
+      editor:
+        $ref: "#/definitions/User"
+      createdAt:
+        type: "string"  
+      updatedAt:
+        type: "string"  
+  LoginResponse:
+    type: "object"
+    properties:
+      jwt:
+        type: "string"
+  ChatTokenResponse:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+  ResetPWRequest:
+    type: "object"
+    properties:
+      currentPassword:
+        type: "string"
+      newPassword:
+        type: "string"
+  User:
     type: "object"
     properties:
       id:
         type: "integer"
         format: "int64"
-      name:
-        type: "string"
-      description:
-        type: "string"
-      quantity:
+      firstName:
+        type: "string"  
+      lastName:
+        type: "string"  
+      roleId:
         type: "integer"
-      checked:
-        type: "boolean"
-    xml:
-      name: "Item"
+      role:
+        $ref: "#/definitions/Role"
+      accountState:
+        type: "string"
+        description: "State of the user"
+        enum:
+        - "banned"
+        - "verified"
+        - "new"
+      phone:
+        type: "string" 
+      address:
+        type: "string" 
+      zip:
+        type: "integer" 
+      city:
+        type: "string" 
+      acceptedPrivacyStatement:
+        type: "boolean" 
+      allowedCalls:
+        type: "boolean" 
+      smsConfirmed:
+        type: "boolean" 
+      karmaPoints:
+        type: "integer" 
+      chatUserId:
+        type: "string" 
+      createDate:
+        type: "string" 
+      updateDate:
+        type: "string" 
   Mission:
     type: "object"
     required:
     - "name"
-    - "userId"
+    - "photoUrls"
     properties:
       id:
-        type: "integer"
-        format: "int64"
-      karmaPoints:
-        type: "integer"
-        format: "int32"
-      name:
         type: "string"
-        example: "doggie"
-      receipts:
-        $ref: "#/definitions/Receipt"
+      statusId:
+        type: "integer"
+      status:
+        $ref: "#/definitions/Status"
+      categoryId:
+        type: "integer"
       category:
         $ref: "#/definitions/Category"
-      actionList:
-        $ref: "#/definitions/Item"
-      role:
-        $ref: "#/definitions/Role"
-      status:
-        type: "string"
-        description: "Mission status"
-        enum:
-        - "open"
-        - "pending"
-        - "done"
-      paymentStatus:
-        type: "string"
-      isReviewed:
-        type: "boolean"
-      maxPrice: 
+      typeId:
         type: "integer"
-        format : "int32"
-      address: 
-        type: "string"
-    xml:
-      name: "Mission"
-    
-  ApiResponse:
-    type: "object"
-    properties:
-      code:
-        type: "integer"
-        format: "int32"
       type:
+        $ref: "#/definitions/MissionType"
+      name:
         type: "string"
-      message:
+      description:
         type: "string"
+      zip:
+        type: "string"
+      street:
+        type: "string"
+      streetnumber:
+        type: "integer"
+      location:
+        type: "object"
+        properties:
+          latitude:
+            type: "number"
+          longitude:
+            type: "number"
+      fraudReportId:
+        type: "integer"
+      fraudReport:
+        $ref: "#/definitions/FraudReport"
 externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+  description: "Find out more about karmakurier"
+  url: "https://karmakurier.org"
