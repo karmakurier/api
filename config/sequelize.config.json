@@ -5,11 +5,7 @@
         "storage": "development.sqlite"
     },
     "production": {
-        "username": "<user>",
-        "password": "<pw>",
-        "database": "<db",
-        "host": "<host>",
-        "dialect": "mariadb",
-        "use_env_variable":"mariadb://xx"
+        "use_env_variable":"SQL_CONNECTION_STRING",
+        "dialect": "postgres"
     }
 }

@@ -19,12 +19,12 @@ if(process.env.NODE_ENV == 'development'){
 mongoose.connect(process.env.MONGODB);
 
 const app = express();
-const corsOptions = {
+/*const corsOptions = {
 	origin: ["http://localhost:8080"],
 	optionsSuccessStatus: 200
-};
+};*/
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(logger("dev"));
 app.use(express.json());

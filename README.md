@@ -19,6 +19,8 @@ The following configuration properties have to be configured to use the API.
 set JWT_SECRET=<yoursecret>
 # sets MONGODB Connection String
 set MONGODB=mongodb://<url>
+# sets SQL Connectionstring
+set SQL_CONNECTION_STRING==postgresql://
 # set the environment. For dev: chooses sqlite for local development and enables seeding. Details see `seed/seed_dev.js`
 set NODE_ENV=development
 
