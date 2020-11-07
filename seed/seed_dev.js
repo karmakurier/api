@@ -11,7 +11,7 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
     seedDevelopment: async () => {
-        const hashedPassword = await bcrypt.hash("Start#1234!", 10);
+        const hashedPassword = await bcrypt.hash(process.env.INIT_USER_PASSWORD, 10);
         // Seed initial Role
         let foundRole = await sqlModels.role.findOne({ where: { name: 'USER' } });
         if (!foundRole) {
@@ -25,7 +25,7 @@ module.exports = {
 
         // Seed initial User
         console.log("Test");
-        let foundUser = await sqlModels.user.findOne({ where: { email: 'test@a.de' } });
+        let foundUser = await sqlModels.user.findOne({ where: { email: process.env.INIT_USER_MAIL } });
         console.log(foundUser);
         if (!foundUser) {
             await sqlModels.role.findOne({ where: { name: "USER" } }).then(defaultRole => {
@@ -34,7 +34,7 @@ module.exports = {
                 sqlModels.user.create({
                     firstName: "Max",
                     lastName: "Mustermann",
-                    email: "test@a.de",
+                    email: process.env.INIT_USER_MAIL,
                     phone: "+491710000000",
                     zip: "01067",
                     city: "Dresden",

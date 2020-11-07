@@ -23,6 +23,10 @@ set MONGODB=mongodb://<url>
 set SQL_CONNECTION_STRING=postgresql://
 # set the environment. For dev: chooses sqlite for local development and enables seeding. Details see `seed/seed_dev.js`
 set NODE_ENV=development
+# set init user pw for seeded user
+set INIT_USER_PASSWORD=
+# set init user mail for seeded user
+set INIT_USER_MAIL=
 
 # If you are on MAC, use those
 export JWT_SECRET=<yoursecret>
