@@ -12,7 +12,7 @@ RUN npm install --production
 
 COPY --chown=node:node . .
 
-ENV NODE_ENV="production"
+ENV NODE_ENV="development"
 
 EXPOSE 8000
 
