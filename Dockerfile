@@ -14,7 +14,7 @@ COPY --chown=node:node . .
 
 ENV NODE_ENV="development"
 
-EXPOSE 8000
+EXPOSE 3000
 
 # Start the API
 CMD npm start
