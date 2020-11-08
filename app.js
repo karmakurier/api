@@ -16,7 +16,7 @@ if(process.env.NODE_ENV == 'development'){
 }
 
 
-mongoose.connect(process.env.MONGODB);
+mongoose.connect(process.env.MONGODB, { useNewUrlParser: true });
 
 const app = express();
 /*const corsOptions = {
